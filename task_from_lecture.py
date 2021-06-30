@@ -3,14 +3,15 @@ import doctest
 
 def is_type_safe(arg, type):
     try:
-        converted_arg = type(arg)
+        type(arg)
         return True
     except Exception:
         return False
 
-def print_list(values):
-    print()
-    print(*[x for x in values], sep='\n')
+def print_list(values, message):
+    if values:
+        print(message)
+        print(*[x for x in values], sep='\n')
 
 def get_type(arg):
     """
@@ -51,13 +52,10 @@ def get_type(arg):
 
 doctest.testmod()
 
-def main():
+def sort_args_by_type():
     strings = []
     integers = []
     floats = []
-
-    if not argv[1:]:
-        return
 
     for arg in argv[1:]:
         arg_type = get_type(arg)
@@ -67,27 +65,28 @@ def main():
             floats.append(arg)
         elif arg_type is str:
             strings.append(arg)
+    
+    return integers, floats, strings
 
-    if strings:
-        print('Strings:')
-        print_list(strings)
-
-    if integers:
-        print('Integers:')
-        print_list(integers)
-
-    if floats:
-        print('Floats:')
-        print_list(floats)
-
+def get_list_str_contains_last_args(strings):
+    result = []
     try:
         last_arg = argv[-1]
         if last_arg == strings[-1]:
-            print(f'Found string {last_arg} in following args:')
-            for string in strings:
-                if last_arg in string:
-                    print(string)
+            result = [x for x in strings if last_arg in x]
     except Exception:
         pass
+
+    return result
+
+def main():
+    integers, floats, strings = sort_args_by_type()
+
+    print_list(integers, 'Integers:')
+    print_list(floats, 'Floats:')
+    print_list(strings, 'Strings:')
+
+    string_contains_larg = get_list_str_contains_last_args(strings)
+    print_list(string_contains_larg, f'Strings contains last arg:')
 
 main()
